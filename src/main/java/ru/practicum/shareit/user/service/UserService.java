@@ -1,25 +1,23 @@
 package ru.practicum.shareit.user.service;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collection;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserStorage userStorage;
+public interface UserService {
+    Collection<User> getAllUsers();
 
-    public Collection<User> getAllUsers() {
-       return userStorage.getAllUsers();
-    }
+    User getUserById(@Positive Long userId);
 
-    public UserDto getUserById(@Positive Long userId) {
-        return UserMapper.jpaToDto(userStorage.getUserById(userId));
-    }
+    UserDto getUserDtoById(@Positive Long userId);
+
+    User addNewUser(@Valid UserDto userDto);
+
+    User updateUser(Long id, @Valid UserDto userDto);
+
+    User deleteUserById(@Positive Long id);
 }

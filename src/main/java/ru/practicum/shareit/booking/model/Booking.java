@@ -29,7 +29,7 @@ public class Booking {
     private LocalDate end;
     @NotNull
     private Item item;
-    private Long bookerId;
+    private User booker;
     @NotNull
     private BookingStatus bookingStatus;
 }

@@ -1,72 +1,30 @@
 package ru.practicum.shareit.item.service;
 
 import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collection;
-import java.util.Objects;
 
-@Service
-@RequiredArgsConstructor
-public class ItemService {
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+public interface ItemService {
 
-    public Collection<Item> getAllItems() {
-        return itemStorage.getAllItems();
-    }
+    Collection<Item> getAllItems();
 
-    public Collection<Item> getUsersItems(Long ownerId) {
-        return itemStorage.getUsersItems(ownerId);
-    }
+    Collection<ItemDto> getAllItemsDto();
 
-    public Item getItemById(Long id) {
-        return itemStorage.getItemById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден"));
-    }
+    Collection<ItemDto> getUsersItems(Long ownerId);
 
-    public Item getItemByName(@Positive String itemName) {
-        return itemStorage.getItemByName(itemName)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет с таким именем не найден"));
-    }
+    Item getItemById(Long id);
 
-    public ItemDto getItemDtoById(Long id) {
-        return ItemMapper.jpaToDto(getItemById(id));
-    }
+    Collection<Item> getItemsBySearchText(@Positive String searchText);
 
-    public ItemDto getItemDtoByName(@Positive String itemName) {
-        return ItemMapper.jpaToDto(getItemByName(itemName));
-    }
+    ItemDto getItemDtoById(Long id);
 
-    public ItemDto addItem(Long ownerId, ItemDto itemDto) {
-        Item newItem = ItemMapper.dtoToJpa(itemDto);
-        newItem.setOwner(userStorage.getUserById(ownerId));
-        return ItemMapper.jpaToDto(itemStorage.addItem(newItem));
-    }
+    Collection<ItemDto> getItemsDtoBySearchText(@Positive String searchText);
 
-    public ItemDto updateItem(Long ownerId, ItemDto itemDto) {
-        Item itemToUpdate = getItemById(itemDto.getId());
-        if (!itemToUpdate.getOwner().getId().equals(ownerId))
-            throw new ValidationException("Пользователь не является владельцем предмета");
-        if (!Objects.isNull(itemDto.getName()))
-            itemToUpdate.setName(itemDto.getName());
-        if (!Objects.isNull(itemDto.getDescription()))
-            itemToUpdate.setDescription(itemDto.getDescription());
-        if (!Objects.isNull(itemDto.getIsAvailableStatus()))
-            itemToUpdate.setIsAvailableStatus(itemDto.getIsAvailableStatus());
-        return ItemMapper.jpaToDto(itemStorage.updateItem(itemToUpdate));
-    }
+    ItemDto addItem(Long ownerId, ItemDto itemDto);
 
-    public ItemDto deleteItemById(Long id) {
-        getItemById(id);
-        return ItemMapper.jpaToDto(itemStorage.deleteItem(id));
-    }
+    ItemDto updateItem(Long ownerId, ItemDto itemDto);
+
+    ItemDto deleteItemById(Long id);
 }
