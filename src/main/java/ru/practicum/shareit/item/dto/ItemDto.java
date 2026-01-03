@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -16,7 +17,7 @@ public class ItemDto {
     private String name;
     @NotBlank
     private String description;
-    @NotBlank
-    private Boolean isAvailableStatus;
+    @NotNull
+    private Boolean available;
     private ItemRequest request;
 }

@@ -34,7 +34,9 @@ public class ItemStorage {
     public Collection<Item> getAvailableItemByName(String searchText) {
         return items.values()
                 .stream()
-                .filter(e -> (e.getName().contains(searchText) || e.getDescription().contains(searchText)) && e.getIsAvailableStatus().equals(true))
+                .filter(e -> (e.getName().equalsIgnoreCase(searchText)
+                              || e.getDescription().equalsIgnoreCase(searchText))
+                             && e.getAvailable().equals(true))
                 .toList();
     }
 

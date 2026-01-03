@@ -19,7 +19,7 @@ public class Item {
     @NotBlank
     private String description;
     @NotNull
-    private Boolean isAvailableStatus;
+    private Boolean available;
     @NotBlank
     private User owner;
     private ItemRequest request;

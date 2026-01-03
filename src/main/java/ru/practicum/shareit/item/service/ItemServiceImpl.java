@@ -64,16 +64,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(Long ownerId, ItemDto itemDto) {
-        Item itemToUpdate = getItemById(itemDto.getId());
+    public ItemDto updateItem(Long ownerId, Long itemId, ItemDto itemDto) {
+        Item itemToUpdate = getItemById(itemId);
         if (!itemToUpdate.getOwner().getId().equals(ownerId))
-            throw new ValidationException("Пользователь не является владельцем предмета");
+            throw new EntityNotFoundException("Пользователь не является владельцем предмета");
         if (Objects.nonNull(itemDto.getName()) && !itemToUpdate.getName().equals(itemDto.getName()))
             itemToUpdate.setName(itemDto.getName());
         if (Objects.nonNull(itemDto.getDescription()) && !itemToUpdate.getDescription().equals(itemDto.getDescription()))
             itemToUpdate.setDescription(itemDto.getDescription());
-        if (Objects.nonNull(itemDto.getIsAvailableStatus()) && !itemToUpdate.getIsAvailableStatus().equals(itemDto.getIsAvailableStatus()))
-            itemToUpdate.setIsAvailableStatus(itemDto.getIsAvailableStatus());
+        if (Objects.nonNull(itemDto.getAvailable()) && !itemToUpdate.getAvailable().equals(itemDto.getAvailable()))
+            itemToUpdate.setAvailable(itemDto.getAvailable());
         return ItemMapper.jpaToDto(itemToUpdate);
     }
 

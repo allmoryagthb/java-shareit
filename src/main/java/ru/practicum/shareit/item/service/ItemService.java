@@ -24,7 +24,7 @@ public interface ItemService {
 
     ItemDto addItem(Long ownerId, ItemDto itemDto);
 
-    ItemDto updateItem(Long ownerId, ItemDto itemDto);
+    ItemDto updateItem(Long ownerId, Long itemId, ItemDto itemDto);
 
     ItemDto deleteItemById(Long id);
 }

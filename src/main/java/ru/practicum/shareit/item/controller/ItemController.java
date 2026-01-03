@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
 
@@ -17,7 +17,7 @@ import java.util.Collection;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-    private final ItemServiceImpl itemService;
+    private final ItemService itemService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -33,7 +33,7 @@ public class ItemController {
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDto> getItemsByName(@RequestParam String searchText) {
+    public Collection<ItemDto> getItemsByName(@RequestParam(name = "text") String searchText) {
         return itemService.getItemsDtoBySearchText(searchText);
     }
 
@@ -44,11 +44,12 @@ public class ItemController {
         return itemService.addItem(ownerId, itemDto);
     }
 
-    @PatchMapping
+    @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                              @Valid @RequestBody ItemDto itemDto) {
-        return itemService.updateItem(ownerId, itemDto);
+                              @Positive @PathVariable(value = "itemId") Long itemId,
+                              @RequestBody ItemDto itemDto) {
+        return itemService.updateItem(ownerId, itemId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
