@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.storage;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.stereotype.Repository;
