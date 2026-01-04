@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.service;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
