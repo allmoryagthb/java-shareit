@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityNotFoundException;
@@ -12,6 +11,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 @Service
@@ -37,6 +37,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDto> getAvailableItemsDtoByText(String searchText) {
+        if (searchText.isBlank())
+            return Collections.emptyList();
         return itemStorage.getAvailableItemByText(searchText)
                 .stream()
                 .map(ItemMapper::jpaToDto)
