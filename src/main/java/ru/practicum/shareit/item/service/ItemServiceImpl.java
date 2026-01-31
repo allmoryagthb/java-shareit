@@ -6,6 +6,7 @@ import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
@@ -17,13 +18,13 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
     private final UserService userService;
 
     @Override
     public Collection<ItemDto> getUsersItemsDto(Long ownerId) {
-        userService.getUserDtoById(ownerId);
-        return itemStorage.getUsersItems(ownerId)
+        userService.getUserDtoById(ownerId); // check user exists
+        return itemRepository.getAllByOwnerId(ownerId)
                 .stream()
                 .map(ItemMapper::jpaToDto)
                 .toList();
@@ -31,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemDtoById(Long itemId) {
-        return ItemMapper.jpaToDto(itemStorage.getItemById(itemId)
+        return ItemMapper.jpaToDto(itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")));
     }
 
@@ -39,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDto> getAvailableItemsDtoByText(String searchText) {
         if (searchText.isBlank())
             return Collections.emptyList();
-        return itemStorage.getAvailableItemByText(searchText)
+        return itemRepository.search(searchText)
                 .stream()
                 .map(ItemMapper::jpaToDto)
                 .toList();
