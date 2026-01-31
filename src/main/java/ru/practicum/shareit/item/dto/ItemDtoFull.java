@@ -10,7 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoFull {
     private Long id;
     @NotBlank
     private String name;
@@ -19,4 +19,6 @@ public class ItemDto {
     @NotNull
     private Boolean available;
     private Long requestId;
+    private BookingDto lastBooking;
+    private BookingDto nextBooking;
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDto> getUsersItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public Collection<ItemDtoFull> getUsersItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         log.info("Получить все предметы");
         return itemService.getUsersItemsDto(ownerId);
     }
@@ -58,9 +59,9 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto deleteItemById(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                  @Positive @PathVariable(value = "itemId") Long itemId) {
+    public void deleteItemById(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                               @Positive @PathVariable(value = "itemId") Long itemId) {
         log.info("Удалить предмет с id = {}", itemId);
-        return itemService.deleteItemById(ownerId, itemId);
+        itemService.deleteItemById(ownerId, itemId);
     }
 }
