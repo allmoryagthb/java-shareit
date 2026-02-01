@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 

@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.Collection;
