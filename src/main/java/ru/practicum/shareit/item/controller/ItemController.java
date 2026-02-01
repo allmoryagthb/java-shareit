@@ -30,9 +30,10 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDtoFull getItemById(@Positive @PathVariable(value = "itemId") Long id) {
+    public ItemDtoFull getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @Positive @PathVariable(value = "itemId") Long id) {
         log.info("Получить предмет по id = {}", id);
-        return itemService.getItemDtoById(id);
+        return itemService.getItemDtoById(id, userId);
     }
 
     @GetMapping("/search")

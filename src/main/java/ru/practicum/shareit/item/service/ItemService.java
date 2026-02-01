@@ -12,7 +12,7 @@ public interface ItemService {
 
     Collection<ItemDtoFull> getUserItems(Long ownerId);
 
-    ItemDtoFull getItemDtoById(Long id);
+    ItemDtoFull getItemDtoById(Long id, Long userId);
 
     Collection<ItemDto> getAvailableItemsDtoByText(@Positive String searchText);
 

@@ -49,9 +49,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDtoFull getItemDtoById(Long itemId) {
+    public ItemDtoFull getItemDtoById(Long itemId, Long userId) {
         return addInfoToItem(itemRepository
-                .findById(itemId).orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")));
+                .findById(itemId).orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")), userId);
     }
 
     @Override
@@ -129,19 +129,21 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.jpaToDtoShort(commentRepository.save(CommentMapper.dtoToJpa(commentDto)));
     }
 
-    private ItemDtoFull addInfoToItem(Item item) {
+    private ItemDtoFull addInfoToItem(Item item, Long userId) {
         ItemDtoFull itemDtoFull = ItemMapper.jpaToDtoFull(item);
 
-        Booking bookingLast = bookingRepository
-                .findFirstByItemIdAndEndBeforeAndStatus(item.getId(), now(),
-                        BookingStatus.APPROVED, Sort.by(DESC, "start")).orElse(null);
+        if (item.getOwner().getId().equals(userId)) {
+            Booking bookingLast = bookingRepository
+                    .findFirstByItemIdAndEndBeforeAndStatus(item.getId(), now(),
+                            BookingStatus.APPROVED, Sort.by(DESC, "start")).orElse(null);
 
-        itemDtoFull.setLastBooking(Objects.nonNull(bookingLast) ? BookingMapper.jpaToDto(bookingLast) : null);
+            itemDtoFull.setLastBooking(Objects.nonNull(bookingLast) ? BookingMapper.jpaToDto(bookingLast) : null);
 
-        Booking bookingNext = bookingRepository
-                .findFirstByItemIdAndStartAfterAndStatus(item.getId(), now(),
-                        BookingStatus.APPROVED, Sort.by(ASC, "start")).orElse(null);
-        itemDtoFull.setNextBooking(Objects.nonNull(bookingNext) ? BookingMapper.jpaToDto(bookingNext) : null);
+            Booking bookingNext = bookingRepository
+                    .findFirstByItemIdAndStartAfterAndStatus(item.getId(), now(),
+                            BookingStatus.APPROVED, Sort.by(ASC, "start")).orElse(null);
+            itemDtoFull.setNextBooking(Objects.nonNull(bookingNext) ? BookingMapper.jpaToDto(bookingNext) : null);
+        }
 
         itemDtoFull.setComments(commentRepository.findAllByItemId(item.getId())
                 .stream()
