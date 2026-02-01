@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.service.ItemService;
@@ -28,7 +30,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto getItemById(@Positive @PathVariable(value = "itemId") Long id) {
+    public ItemDtoFull getItemById(@Positive @PathVariable(value = "itemId") Long id) {
         log.info("Получить предмет по id = {}", id);
         return itemService.getItemDtoById(id);
     }
@@ -63,5 +65,14 @@ public class ItemController {
                                @Positive @PathVariable(value = "itemId") Long itemId) {
         log.info("Удалить предмет с id = {}", itemId);
         itemService.deleteItemById(ownerId, itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                 @Positive @PathVariable(value = "itemId") Long itemId,
+                                 @RequestBody Comment comment) {
+        log.info("Добавить комментарий");
+        return itemService.addComment(ownerId, itemId, comment);
     }
 }

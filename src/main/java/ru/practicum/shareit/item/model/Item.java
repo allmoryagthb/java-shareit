@@ -30,7 +30,6 @@ public class Item {
     @Column(name = "is_available")
     private Boolean available;
 
-    @NotBlank
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;

@@ -12,7 +12,7 @@ public class BookingMapper {
                 booking.getEnd(),
                 booking.getItem(),
                 booking.getBooker(),
-                booking.getBookingStatus());
+                booking.getStatus());
     }
 
     public static Booking dtoToJpa(BookingDto bookingDto) {
@@ -22,6 +22,6 @@ public class BookingMapper {
                 bookingDto.getEnd(),
                 bookingDto.getItem(),
                 bookingDto.getBooker(),
-                bookingDto.getBookingStatus());
+                bookingDto.getStatus());
     }
 }

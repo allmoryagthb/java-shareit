@@ -31,7 +31,6 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getRequestId(),
-                null, null);
+                item.getRequestId());
     }
 }

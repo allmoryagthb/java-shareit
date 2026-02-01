@@ -8,12 +8,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -29,13 +29,13 @@ public class Booking {
     @FutureOrPresent
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "start_date")
-    private LocalDate start;
+    private LocalDateTime start;
 
     @NotNull
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "end_date")
-    private LocalDate end;
+    private LocalDateTime end;
 
     @NotNull
     @ManyToOne
@@ -48,5 +48,6 @@ public class Booking {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private BookingStatus bookingStatus;
+    @Column(name = "status")
+    private BookingStatus status;
 }
