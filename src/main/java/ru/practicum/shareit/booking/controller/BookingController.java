@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
+import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
@@ -24,10 +25,10 @@ public class BookingController {
         return bookingService.addBooking(bookingDtoInput, bookerId);
     }
 
-    @PatchMapping("/{bookingId}?approved={approved}")
-    public BookingDto updateBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                    @PathVariable(name = "bookingId") Long bookingId,
-                                    @PathVariable(name = "approved") Boolean approved) {
+    @PatchMapping("/{bookingId}")
+    public BookingDtoOutput updateBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                          @PathVariable(name = "bookingId") Long bookingId,
+                                          @RequestParam(name = "approved") Boolean approved) {
         log.info("Обновить заявку");
         return bookingService.updateBookingStatus(bookingId, ownerId, approved);
     }

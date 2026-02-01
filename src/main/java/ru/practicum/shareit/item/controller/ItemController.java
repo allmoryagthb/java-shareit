@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
 import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
@@ -25,7 +26,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public Collection<ItemDtoFull> getUsersItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         log.info("Получить все предметы");
-        return itemService.getUsersItemsDto(ownerId);
+        return itemService.getUserItems(ownerId);
     }
 
     @GetMapping("/{itemId}")
@@ -69,10 +70,10 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                 @Positive @PathVariable(value = "itemId") Long itemId,
-                                 @RequestBody Comment comment) {
+    public CommentDtoShort addComment(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                      @Positive @PathVariable(value = "itemId") Long itemId,
+                                      @RequestBody CommentDto commentDto) {
         log.info("Добавить комментарий");
-        return itemService.addComment(ownerId, itemId, comment);
+        return itemService.addComment(ownerId, itemId, commentDto);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
+import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -18,8 +19,9 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.LocalDate;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
@@ -56,20 +58,31 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto updateBookingStatus(Long bookingId, Long ownerId, Boolean isApproved) {
+    public BookingDtoOutput updateBookingStatus(Long bookingId, Long ownerId, Boolean isApproved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Заявка на бронирование с id = '%s' не найдена".formatted(bookingId)));
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%s' не найден".formatted(ownerId)));
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new ValidationException("Пользователь с id = '%s' не найден".formatted(ownerId)));
 
-        if (booking.getStatus().equals(BookingStatus.APPROVED) && isApproved)
-            throw new ConflictException("Заявка на бронирование уже подтверждена");
+        if (booking.getBooker().getId().equals(ownerId)) {                                                     //booker
+            if (!booking.getStatus().equals(BookingStatus.CANCELED) && !isApproved)
+                booking.setStatus(BookingStatus.CANCELED);
+            else if (booking.getStatus().equals(BookingStatus.CANCELED) && !isApproved)
+                throw new ConflictException("Заявка на бронирование уже отменена");
+            else
+                throw new ConflictException("Одобрить заявку может только владелец");
+        } else if (itemRepository.findByOwner(user).getOwner().getId().equals(ownerId)) {                       //owner
+            if (!booking.getStatus().equals(BookingStatus.APPROVED) && !booking.getStatus().equals(BookingStatus.CANCELED) && isApproved)
+                booking.setStatus(BookingStatus.APPROVED);
+            else if (booking.getStatus().equals(BookingStatus.APPROVED) && isApproved)
+                throw new ConflictException("Заявка на бронирование уже подтверждена");
+            else if (booking.getStatus().equals(BookingStatus.REJECTED))
+                throw new ConflictException("Заявка на бронирование уже отклонена");
+            else
+                booking.setStatus(BookingStatus.REJECTED);
+        }
 
-        if (booking.getStatus().equals(BookingStatus.REJECTED) && !isApproved)
-            throw new ConflictException("Заявка на бронирование уже отменена");
-
-
-        return BookingMapper.jpaToDto(bookingRepository.save(booking));
+        return BookingMapper.jpaToDtoOutput(bookingRepository.save(booking));
     }
 
     @Override
@@ -95,9 +108,9 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "ALL" -> result = bookingRepository.findByBookerId(bookerId, sort);
             case "CURRENT" ->
-                    result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(bookerId, LocalDate.now(), LocalDate.now(), sort);
-            case "PAST" -> result = bookingRepository.findByBookerIdAndEndBefore(bookerId, LocalDate.now(), sort);
-            case "FUTURE" -> result = bookingRepository.findByBookerIdAndStartAfter(bookerId, LocalDate.now(), sort);
+                    result = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(bookerId, now(), now(), sort);
+            case "PAST" -> result = bookingRepository.findByBookerIdAndEndBefore(bookerId, now(), sort);
+            case "FUTURE" -> result = bookingRepository.findByBookerIdAndStartAfter(bookerId, now(), sort);
             case "WAITING" ->
                     result = bookingRepository.findByBookerIdAndStatusEqualsIgnoreCase(bookerId, BookingStatus.WAITING, sort);
             case "REJECTED" ->
@@ -120,9 +133,9 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "ALL" -> result = bookingRepository.findByItemOwnerId(ownerId, sort);
             case "CURRENT" ->
-                    result = bookingRepository.findByItemOwnerIdAndStartBeforeAndEndAfter(ownerId, LocalDate.now(), LocalDate.now(), sort);
-            case "PAST" -> result = bookingRepository.findByItemOwnerIdAndEndBefore(ownerId, LocalDate.now(), sort);
-            case "FUTURE" -> result = bookingRepository.findByItemOwnerIdAndStartAfter(ownerId, LocalDate.now(), sort);
+                    result = bookingRepository.findByItemOwnerIdAndStartBeforeAndEndAfter(ownerId, now(), now(), sort);
+            case "PAST" -> result = bookingRepository.findByItemOwnerIdAndEndBefore(ownerId, now(), sort);
+            case "FUTURE" -> result = bookingRepository.findByItemOwnerIdAndStartAfter(ownerId, now(), sort);
             case "WAITING" ->
                     result = bookingRepository.findByItemOwnerIdAndStatusEqualsIgnoreCase(ownerId, BookingStatus.WAITING, sort);
             case "REJECTED" ->

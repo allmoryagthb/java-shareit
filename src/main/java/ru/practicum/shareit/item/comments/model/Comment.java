@@ -21,7 +21,7 @@ public class Comment {
     private Long id;
 
     @NotNull
-    @Column
+    @Column(name = "text")
     private String text;
 
     @ManyToOne

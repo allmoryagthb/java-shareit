@@ -26,13 +26,11 @@ public class Booking {
     private Long id;
 
     @NotNull
-    @FutureOrPresent
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "start_date")
     private LocalDateTime start;
 
     @NotNull
-    @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "end_date")
     private LocalDateTime end;

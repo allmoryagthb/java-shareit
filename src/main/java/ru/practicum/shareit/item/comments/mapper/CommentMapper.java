@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.comments.mapper;
 
 import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
 import ru.practicum.shareit.item.comments.model.Comment;
 
 public class CommentMapper {
@@ -19,7 +20,15 @@ public class CommentMapper {
                 commentDto.getId(),
                 commentDto.getText(),
                 commentDto.getItem(),
-                commentDto.getAuthor(),
+                commentDto.getAuthorName(),
                 commentDto.getCreated());
+    }
+
+    public static CommentDtoShort jpaToDtoShort(Comment comment) {
+        return new CommentDtoShort(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getName(),
+                comment.getCreated());
     }
 }

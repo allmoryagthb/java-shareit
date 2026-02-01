@@ -9,7 +9,9 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
 import ru.practicum.shareit.item.comments.mapper.CommentMapper;
 import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.comments.repository.CommentRepository;
@@ -21,13 +23,15 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -38,17 +42,17 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public Collection<ItemDtoFull> getUsersItemsDto(Long ownerId) {
+    public Collection<ItemDtoFull> getUserItems(Long ownerId) {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
-        return addBookingsToItems(itemRepository.getAllByOwnerId(ownerId));
+        return addInfoToItems(itemRepository.getAllByOwnerId(ownerId));
 
     }
 
     @Override
     public ItemDtoFull getItemDtoById(Long itemId) {
-        return ItemMapper.jpaToDtoFull(itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")));
+        return addInfoToItem(itemRepository
+                .findById(itemId).orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")));
     }
 
     @Override
@@ -110,38 +114,65 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto addComment(Long userId, Long itemId, Comment comment) {
-        userRepository.findById(userId)
+    public CommentDtoShort addComment(Long userId, Long itemId, CommentDto commentDto) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
-        itemRepository.findById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден"));
 
-        if (!bookingRepository.findByBookerIdAndItemIdAndEndBefore(userId, itemId, LocalDate.now()))
-            throw new ConflictException("Пользователь не являлся арендатором предмета");
+        if (Objects.isNull(bookingRepository
+                .findFirstByItemIdAndBookerIdAndEndIsBefore(itemId, userId, now())))
+            throw new ValidationException("Пользователь не являлся арендатором предмета");
 
-        return CommentMapper.jpaToDto(commentRepository.save(comment));
+        commentDto.setAuthorName(user);
+        commentDto.setItem(item);
+        commentDto.setCreated(now());
+        return CommentMapper.jpaToDtoShort(commentRepository.save(CommentMapper.dtoToJpa(commentDto)));
     }
 
-    private List<ItemDtoFull> addBookingsToItems(List<Item> items) {
+    private ItemDtoFull addInfoToItem(Item item) {
+        ItemDtoFull itemDtoFull = ItemMapper.jpaToDtoFull(item);
+
+        Booking bookingLast = bookingRepository
+                .findFirstByItemIdAndEndBeforeAndStatus(item.getId(), now(),
+                        BookingStatus.APPROVED, Sort.by(DESC, "start")).orElse(null);
+
+        itemDtoFull.setLastBooking(Objects.nonNull(bookingLast) ? BookingMapper.jpaToDto(bookingLast) : null);
+
+        Booking bookingNext = bookingRepository
+                .findFirstByItemIdAndStartAfterAndStatus(item.getId(), now(),
+                        BookingStatus.APPROVED, Sort.by(ASC, "start")).orElse(null);
+        itemDtoFull.setNextBooking(Objects.nonNull(bookingNext) ? BookingMapper.jpaToDto(bookingNext) : null);
+
+        itemDtoFull.setComments(commentRepository.findAllByItemId(item.getId())
+                .stream()
+                .map(CommentMapper::jpaToDto)
+                .collect(toList()));
+
+        return itemDtoFull;
+    }
+
+    private List<ItemDtoFull> addInfoToItems(List<Item> items) {
         Map<Item, Booking> itemsWithLastBookings = bookingRepository
                 .findByItemInAndStartLessThanEqualAndStatus(
                         items,
-                        LocalDate.now(),
+                        now(),
                         BookingStatus.APPROVED,
-                        Sort.by(Sort.Direction.DESC, "start"))
+                        Sort.by(DESC, "start"))
                 .stream()
-                .collect(Collectors.toMap(Booking::getItem, Function.identity(), (o1, o2) -> o1));
+                .collect(Collectors.toMap(Booking::getItem, Function.identity()));
 
         Map<Item, Booking> itemsWithNextBookings = bookingRepository
                 .findByItemInAndStartAfterAndStatus(
                         items,
-                        LocalDate.now(),
+                        now(),
                         BookingStatus.APPROVED,
-                        Sort.by(Sort.Direction.ASC, "end"))
+                        Sort.by(Sort.Direction.ASC, "start"))
                 .stream()
-                .collect(Collectors.toMap(Booking::getItem, Function.identity(), (o1, o2) -> o1));
+                .collect(Collectors.toMap(Booking::getItem, Function.identity()));
 
-        Map<Item, List<Comment>> itemsWithComments = commentRepository.findByItemIn(items, Sort.by(Sort.Direction.ASC, "created")).stream()
+        Map<Item, List<Comment>> itemsWithComments = commentRepository
+                .findByItemIn(items, Sort.by(Sort.Direction.DESC, "created")).stream()
                 .collect(groupingBy(Comment::getItem, toList()));
 
         List<ItemDtoFull> result = new ArrayList<>();
@@ -167,4 +198,21 @@ public class ItemServiceImpl implements ItemService {
 
         return result;
     }
+//
+//    private void getAllBookingsByItem(List<ItemDto> itemDtoList,  List<Long> idItems) {
+//        Map<Long, BookingForItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
+//                        idItems, LocalDateTime.now(), BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "start"))
+//                .stream()
+//                .map(BookingMapper::toBookingForItemDto)
+//                .collect(Collectors.toMap(BookingForItemDto::getItemId, Function.identity()));
+//        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
+//
+//        Map<Long, BookingForItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
+//                        idItems, LocalDateTime.now(), BookingStatus.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
+//                .stream()
+//                .map(BookingMapper::toBookingForItemDto)
+//                .collect(Collectors.toMap(BookingForItemDto::getItemId, Function.identity()));
+//        itemDtoList.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
+//
+//    }
 }
