@@ -42,16 +42,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDtoFull> getUserItems(Long ownerId) {
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
+        getUser(ownerId);
         return addInfoToItems(itemRepository.getAllByOwnerId(ownerId));
 
     }
 
     @Override
     public ItemDtoFull getItemDtoById(Long itemId, Long userId) {
-        return addInfoToItem(itemRepository
-                .findById(itemId).orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден")), userId);
+        return addInfoToItem(getItem(itemId), userId);
     }
 
     @Override
@@ -67,18 +65,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(Long ownerId, ItemDto itemDto) {
         Item newItem = ItemMapper.dtoToJpa(itemDto);
-        User user = userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
+        User user = getUser(ownerId);
         newItem.setOwner(user);
         return ItemMapper.jpaToDto(itemRepository.save(newItem));
     }
 
     @Override
     public ItemDto updateItem(Long ownerId, Long itemId, ItemDto itemDto) {
-        Item itemToUpdate = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет предмета с таким id"));
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
+        Item itemToUpdate = getItem(itemId);
+        getUser(ownerId);
 
         if (!itemToUpdate.getOwner().getId().equals(ownerId))
             throw new EntityNotFoundException("Пользователь не является владельцем предмета");
@@ -102,10 +97,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItemById(Long ownerId, Long itemId) {
-        Item itemToDelete = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Нет предмета с таким id"));
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
+        Item itemToDelete = getItem(itemId);
+        getUser(ownerId);
         if (!itemToDelete.getOwner().getId().equals(ownerId))
             throw new EntityNotFoundException("Пользователь не является владельцем предмета");
 
@@ -114,14 +107,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDtoShort addComment(Long userId, Long itemId, CommentDto commentDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден"));
+        User user = getUser(userId);
+        Item item = getItem(itemId);
 
         if (Objects.isNull(bookingRepository
                 .findFirstByItemIdAndBookerIdAndEndIsBefore(itemId, userId, now())))
             throw new ValidationException("Пользователь не являлся арендатором предмета");
+
+        if (Objects.isNull(commentDto.getText()) || commentDto.getText().isBlank())
+            throw new ValidationException("Текст комментария не может быть пустым");
 
         commentDto.setAuthorName(user);
         commentDto.setItem(item);
@@ -199,21 +193,14 @@ public class ItemServiceImpl implements ItemService {
 
         return result;
     }
-//
-//    private void getAllBookingsByItem(List<ItemDto> itemDtoList,  List<Long> idItems) {
-//        Map<Long, BookingForItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
-//                        idItems, LocalDateTime.now(), BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "start"))
-//                .stream()
-//                .map(BookingMapper::toBookingForItemDto)
-//                .collect(Collectors.toMap(BookingForItemDto::getItemId, Function.identity()));
-//        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
-//
-//        Map<Long, BookingForItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
-//                        idItems, LocalDateTime.now(), BookingStatus.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
-//                .stream()
-//                .map(BookingMapper::toBookingForItemDto)
-//                .collect(Collectors.toMap(BookingForItemDto::getItemId, Function.identity()));
-//        itemDtoList.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
-//
-//    }
+
+    private User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%d' не найден".formatted(id)));
+    }
+
+    private Item getItem(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Предмет с id = '%d' не найден".formatted(id)));
+    }
 }

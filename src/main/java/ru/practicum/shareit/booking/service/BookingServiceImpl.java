@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.time.LocalDateTime.now;
 
@@ -33,16 +34,26 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto addBooking(BookingDtoInput bookingDtoInput, Long bookerId) {
-        User user = userRepository.findById(bookerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%s' не найден".formatted(bookerId)));
-        Item item = itemRepository.findById(bookingDtoInput.getItemId())
-                .orElseThrow(() -> new EntityNotFoundException("Предмет с таким id не найден"));
+        User user = getUser(bookerId);
+        Item item = getItem(bookingDtoInput.getItemId());
 
         if (!item.getAvailable())
             throw new ValidationException("Предмет нельзя забронировать");
 
         if (item.getOwner().getId().equals(bookerId))
             throw new ValidationException("Владелец не может забронировать свой предмет");
+
+        if (Objects.isNull(bookingDtoInput.getStart()) || Objects.isNull(bookingDtoInput.getEnd()))
+            throw new ValidationException("Не указаны даты начала/конца бронирования предмета");
+
+        if (bookingDtoInput.getStart().isBefore(now()))
+            throw new ValidationException("Дата начала бронирования должна быть в будущем");
+
+        if (bookingDtoInput.getEnd().isBefore(now()))
+            throw new ValidationException("Дата окончания бронирования должна быть в будущем");
+
+        if (bookingDtoInput.getStart().isAfter(bookingDtoInput.getEnd()))
+            throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания срока бронирования");
 
         Booking booking = new Booking();
         booking.setBooker(user);
@@ -58,21 +69,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoOutput updateBookingStatus(Long bookingId, Long ownerId, Boolean isApproved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Заявка на бронирование с id = '%s' не найдена".formatted(bookingId)));
-        User user = userRepository.findById(ownerId)
-                .orElseThrow(() -> new ValidationException("Пользователь с id = '%s' не найден".formatted(ownerId)));
+    public BookingDtoOutput updateBookingStatus(Long bookingId, Long userId, Boolean isApproved) {
+        Booking booking = getBooking(bookingId);
+        User user = getUser(userId);
 
-        if (booking.getBooker().getId().equals(ownerId)) {                                                     //booker
+        if (booking.getBooker().getId().equals(userId)) {
             if (!booking.getStatus().equals(BookingStatus.CANCELED) && !isApproved)
                 booking.setStatus(BookingStatus.CANCELED);
             else if (booking.getStatus().equals(BookingStatus.CANCELED) && !isApproved)
                 throw new ConflictException("Заявка на бронирование уже отменена");
             else
                 throw new ConflictException("Одобрить заявку может только владелец");
-        } else if (itemRepository.findByOwner(user).getOwner().getId().equals(ownerId)) {                       //owner
-            if (!booking.getStatus().equals(BookingStatus.APPROVED) && !booking.getStatus().equals(BookingStatus.CANCELED) && isApproved)
+        } else if (itemRepository.findByOwner(user).getOwner().getId().equals(userId)) {
+            if (booking.getStatus().equals(BookingStatus.WAITING) && isApproved)
                 booking.setStatus(BookingStatus.APPROVED);
             else if (booking.getStatus().equals(BookingStatus.APPROVED) && isApproved)
                 throw new ConflictException("Заявка на бронирование уже подтверждена");
@@ -87,10 +96,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%s' не найден".formatted(userId)));
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Заявка на бронирование с id = '%s' не найдена".formatted(bookingId)));
+        getUser(userId);
+        Booking booking = getBooking(bookingId);
 
         if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId))
             throw new ConflictException("Пользователь с id '%d' не является владельцем/арендатором предмета".formatted(userId));
@@ -101,8 +108,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBookingsByBooker(String state, Long bookerId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%s' не найден".formatted(bookerId)));
+        getUser(bookerId);
         List<Booking> result;
 
         switch (state) {
@@ -126,8 +132,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBookingsByOwner(String state, Long ownerId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%s' не найден".formatted(ownerId)));
+        getUser(ownerId);
         List<Booking> result;
 
         switch (state) {
@@ -145,5 +150,20 @@ public class BookingServiceImpl implements BookingService {
         return result.stream()
                 .map(BookingMapper::jpaToDto)
                 .toList();
+    }
+
+    private Booking getBooking(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Заявка на бронирование с id = '%d' не найдена".formatted(id)));
+    }
+
+    private User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Пользователь с id = '%d' не найден".formatted(id)));
+    }
+
+    private Item getItem(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Предмет с id = '%d' не найден".formatted(id)));
     }
 }
