@@ -55,10 +55,8 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDtoInput.getStart().isAfter(bookingDtoInput.getEnd()))
             throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания срока бронирования");
 
-        Booking booking = new Booking();
+        Booking booking = BookingMapper.dtoInputToJpa(bookingDtoInput);
         booking.setBooker(user);
-        booking.setStart(bookingDtoInput.getStart());
-        booking.setEnd(bookingDtoInput.getEnd());
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
 
@@ -71,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoOutput updateBookingStatus(Long bookingId, Long userId, Boolean isApproved) {
         Booking booking = getBooking(bookingId);
-        User user = getUser(userId);
+        getUser(userId);
 
         if (booking.getBooker().getId().equals(userId)) {
             if (!booking.getStatus().equals(BookingStatus.CANCELED) && !isApproved)
@@ -80,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new ConflictException("Заявка на бронирование уже отменена");
             else
                 throw new ConflictException("Одобрить заявку может только владелец");
-        } else if (itemRepository.findByOwner(user).getOwner().getId().equals(userId)) {
+        } else if (booking.getItem().getOwner().getId().equals(userId)) {
             if (booking.getStatus().equals(BookingStatus.WAITING) && isApproved)
                 booking.setStatus(BookingStatus.APPROVED);
             else if (booking.getStatus().equals(BookingStatus.APPROVED) && isApproved)

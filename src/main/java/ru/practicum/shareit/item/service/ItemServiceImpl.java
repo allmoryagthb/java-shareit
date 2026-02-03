@@ -117,10 +117,11 @@ public class ItemServiceImpl implements ItemService {
         if (Objects.isNull(commentDto.getText()) || commentDto.getText().isBlank())
             throw new ValidationException("Текст комментария не может быть пустым");
 
-        commentDto.setAuthorName(user);
-        commentDto.setItem(item);
-        commentDto.setCreated(now());
-        return CommentMapper.jpaToDtoShort(commentRepository.save(CommentMapper.dtoToJpa(commentDto)));
+        Comment comment = CommentMapper.dtoToJpa(commentDto);
+        comment.setAuthor(user);
+        comment.setItem(item);
+        comment.setCreated(now());
+        return CommentMapper.jpaToDtoShort(commentRepository.save(comment));
     }
 
     private ItemDtoFull addInfoToItem(Item item, Long userId) {
