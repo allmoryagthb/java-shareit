@@ -51,8 +51,8 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto deleteUserById(@Positive @PathVariable(value = "userId") Long userId) {
+    public void deleteUserById(@Positive @PathVariable(value = "userId") Long userId) {
         log.info("Удалить пользователя с id = {}", userId);
-        return userService.deleteUserById(userId);
+        userService.deleteUserById(userId);
     }
 }

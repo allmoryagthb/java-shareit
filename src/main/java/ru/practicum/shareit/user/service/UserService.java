@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.util.Collection;
 
 public interface UserService {
+
     Collection<UserDto> getAllUsersDto();
 
     UserDto getUserDtoById(@Positive Long userId);
@@ -15,5 +16,5 @@ public interface UserService {
 
     UserDto updateUser(@Positive Long id, @Valid UserDto userDto);
 
-    UserDto deleteUserById(@Positive Long id);
+    void deleteUserById(@Positive Long id);
 }

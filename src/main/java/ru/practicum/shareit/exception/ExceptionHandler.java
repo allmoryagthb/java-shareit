@@ -24,4 +24,10 @@ public class ExceptionHandler {
     public ErrorResponse generalExceptionHandler(final RuntimeException e) {
         return new ErrorResponse("Ошибка", e.getMessage());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse conflictExceptionHandler(final ConflictException e) {
+        return new ErrorResponse("Конфликт", e.getMessage());
+    }
 }
