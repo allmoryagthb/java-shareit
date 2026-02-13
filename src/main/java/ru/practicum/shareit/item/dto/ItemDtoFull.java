@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 
 import java.util.List;
 
@@ -21,16 +22,16 @@ public class ItemDtoFull {
     private String description;
     @NotNull
     private Boolean available;
-    private Long requestId;
+    private ItemRequestDtoOutput itemRequestDtoOutput;
     private BookingDto lastBooking;
     private BookingDto nextBooking;
     private List<CommentDto> comments;
 
-    public ItemDtoFull(Long id, String name, String description, Boolean available, Long requestId) {
+    public ItemDtoFull(Long id, String name, String description, Boolean available, ItemRequestDtoOutput itemRequestDtoOutput) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
-        this.requestId = requestId;
+        this.itemRequestDtoOutput = itemRequestDtoOutput;
     }
 }
