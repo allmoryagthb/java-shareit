@@ -3,8 +3,8 @@ package ru.practicum.shareit.item.service;
 import jakarta.validation.constraints.Positive;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
 import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
-import ru.practicum.shareit.server.item.dto.ItemDto;
 
 import java.util.Collection;
 

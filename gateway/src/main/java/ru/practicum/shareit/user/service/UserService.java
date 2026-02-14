@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import ru.practicum.shareit.server.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.Collection;
 

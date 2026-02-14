@@ -1,10 +1,10 @@
 package ru.practicum.shareit.item.mapper;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
-import ru.practicum.shareit.server.item.dto.ItemDto;
-import ru.practicum.shareit.server.item.model.Item;
 
 public class ItemMapper {
 

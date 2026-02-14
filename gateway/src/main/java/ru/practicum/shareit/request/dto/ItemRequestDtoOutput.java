@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.server.item.dto.ItemDtoFull;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 
 import java.time.LocalDate;
 import java.util.List;

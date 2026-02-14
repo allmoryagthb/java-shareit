@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
-import ru.practicum.shareit.server.item.comments.dto.CommentDtoShort;
-import ru.practicum.shareit.server.item.dto.ItemDto;
-import ru.practicum.shareit.server.item.service.ItemService;
+import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
 

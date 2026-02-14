@@ -14,11 +14,11 @@ import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
 import ru.practicum.shareit.item.comments.mapper.CommentMapper;
 import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.comments.repository.CommentRepository;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.server.item.dto.ItemDto;
 
 import java.util.*;
 import java.util.function.Function;

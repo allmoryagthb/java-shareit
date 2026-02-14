@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.storage;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.server.user.model.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
