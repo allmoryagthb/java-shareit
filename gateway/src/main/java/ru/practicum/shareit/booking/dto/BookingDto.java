@@ -1,20 +1,19 @@
-package ru.practicum.shareit.item.comments.dto;
+package ru.practicum.shareit.booking.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDto {
+public class BookingDto {
     private Long id;
-    private String text;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private ItemDto item;
-    private UserDto userDto;
-    private LocalDateTime created;
+    private BookingState status;
 }

@@ -33,11 +33,11 @@ public class ItemRequestController {
         return itemRequestService.getAllUsersItemRequests();
     }
 
-    @GetMapping("/requests/{requestId}")
+    @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemRequestDtoOutput> getUsersItemRequestsById(@Positive @PathVariable(value = "requestId") Long requestId) {
+    public ItemRequestDtoOutput getUsersItemRequestById(@Positive @PathVariable(value = "requestId") Long requestId) {
         log.info("Получить заявку с id = '{}'", requestId);
-        return itemRequestService.getUsersItemRequestsById(requestId);
+        return itemRequestService.getUsersItemRequestById(requestId);
     }
 
     @PostMapping

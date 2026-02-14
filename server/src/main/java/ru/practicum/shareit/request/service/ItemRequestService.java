@@ -33,8 +33,8 @@ public class ItemRequestService {
         return addInfo(itemRequestRepository.findAll());
     }
 
-    public Collection<ItemRequestDtoOutput> getUsersItemRequestsById(@Positive Long requestId) {
-        return addInfo(List.of(itemRequestRepository.findById(requestId).orElseThrow()));
+    public ItemRequestDtoOutput getUsersItemRequestById(@Positive Long requestId) {
+        return addInfo(List.of(itemRequestRepository.findById(requestId).orElseThrow())).getFirst();
     }
 
     public ItemRequestDtoOutput addUsersItemRequest(Long ownerId,
