@@ -43,9 +43,9 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ItemRequestDtoOutput addUsersItemRequests(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                                     @Valid @RequestBody ItemRequestDtoInput ItemRequestDtoInput) {
+                                                     @Valid @RequestBody ItemRequestDtoInput itemRequestDtoInput) {
         log.info("Добавить заявку");
-        return itemRequestService.addUsersItemRequest(ownerId, ItemRequestDtoInput);
+        return itemRequestService.addUsersItemRequest(ownerId, itemRequestDtoInput);
     }
 
 
