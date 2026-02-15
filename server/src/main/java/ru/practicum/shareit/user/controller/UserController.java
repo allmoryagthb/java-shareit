@@ -5,9 +5,11 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.util.Update;
 
 import java.util.Collection;
 
@@ -27,7 +29,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto getUserById(@Positive @PathVariable(value = "userId") Long userId) {
+    public UserDto getUserById(@PathVariable(value = "userId") Long userId) {
         log.info("Получить пользователя с id = {}", userId);
         return userService.getUserDtoById(userId);
     }
@@ -41,14 +43,15 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@Positive @PathVariable(value = "userId") Long userId, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@Positive @PathVariable(value = "userId") Long userId,
+                              @RequestBody @Validated(Update.class) UserDto userDto) {
         log.info("Обновить пользователя с id = {}", userId);
         return userService.updateUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUserById(@Positive @PathVariable(value = "userId") Long userId) {
+    public void deleteUserById(@PathVariable(value = "userId") Long userId) {
         log.info("Удалить пользователя с id = {}", userId);
         userService.deleteUserById(userId);
     }

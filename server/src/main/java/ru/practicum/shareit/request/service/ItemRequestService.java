@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -12,8 +13,9 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -24,8 +26,11 @@ import static java.util.stream.Collectors.toList;
 public class ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     public List<ItemRequestDtoOutput> getUsersItemRequests(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
         return addInfo(itemRequestRepository.findAllByRequesterId(userId));
     }
 
@@ -39,9 +44,11 @@ public class ItemRequestService {
 
     public ItemRequestDtoOutput addUsersItemRequest(Long ownerId,
                                                     @Valid ItemRequestDtoInput itemRequestDtoInput) {
+        userRepository.findById(ownerId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с таким id не найден"));
         ItemRequest itemRequest = ItemRequestMapper.dtoInputToJpa(itemRequestDtoInput);
         itemRequest.setRequesterId(ownerId);
-        itemRequest.setCreated(LocalDate.now());
+        itemRequest.setCreated(LocalDateTime.now());
         return ItemRequestMapper.jpaToDtoOutput(itemRequestRepository.save(itemRequest));
     }
 
@@ -61,8 +68,9 @@ public class ItemRequestService {
 
                     if (Objects.nonNull(itemsByElementId))
                         result.setItems(itemsByElementId.stream()
-                                .map(ItemMapper::jpaToDtoFull).toList());
-
+                                .map(ItemMapper::jpaToDto).toList());
+                    else
+                        result.setItems(Collections.emptyList());
                     return result;
                 }).toList();
     }

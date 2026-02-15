@@ -3,8 +3,9 @@ package ru.practicum.shareit.item.mapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+
+import java.util.Objects;
 
 public class ItemMapper {
 
@@ -15,26 +16,32 @@ public class ItemMapper {
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
                 null,
-                itemDto.getItemRequest());
+                null);
     }
 
     public static ItemDto jpaToDto(Item item) {
-        return new ItemDto(
+        ItemDto itemDto = new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
-                item.getRequest());
+                item.getAvailable());
+        if (Objects.nonNull(item.getRequest()))
+            itemDto.setRequestId(item.getRequest().getId());
+        return itemDto;
     }
 
     public static ItemDtoFull jpaToDtoFull(Item item) {
-        ItemRequestDtoOutput itemRequestDtoOutput = ItemRequestMapper.jpaToDtoOutput(item.getRequest());
 
-        return new ItemDtoFull(
+        ItemDtoFull itemDtoFull = new ItemDtoFull(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                itemRequestDtoOutput);
+                null);
+
+        if (Objects.nonNull(item.getRequest()))
+            itemDtoFull.setItemRequestDtoOutput(ItemRequestMapper.jpaToDtoOutput(item.getRequest()));
+
+        return itemDtoFull;
     }
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -25,9 +25,9 @@ public class ItemRequest {
     @Column(name = "requester_id")
     private Long requesterId;
 
-    @NotBlank
+    @NotNull
     @Column(name = "created")
-    private LocalDate created;
+    private LocalDateTime created;
 
     public ItemRequest(Long id, String description) {
         this.id = id;

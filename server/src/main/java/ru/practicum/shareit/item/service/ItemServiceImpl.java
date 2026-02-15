@@ -19,6 +19,8 @@ import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 import java.util.function.Function;
@@ -37,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ru.practicum.shareit.user.repository.UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public Collection<ItemDtoFull> getUserItems(Long ownerId) {
@@ -63,8 +66,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(Long ownerId, ItemDto itemDto) {
         Item newItem = ItemMapper.dtoToJpa(itemDto);
-        ru.practicum.shareit.user.model.User user = getUser(ownerId);
+        User user = getUser(ownerId);
         newItem.setOwner(user);
+        if (Objects.nonNull(itemDto.getRequestId()))
+            newItem.setRequest(itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow());
         return ItemMapper.jpaToDto(itemRepository.save(newItem));
     }
 
@@ -90,6 +95,9 @@ public class ItemServiceImpl implements ItemService {
             && !itemToUpdate.getAvailable().equals(itemDto.getAvailable()))
             itemToUpdate.setAvailable(itemDto.getAvailable());
 
+        if (Objects.nonNull(itemDto.getRequestId()))
+            itemToUpdate.setRequest(itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow());
+
         return ItemMapper.jpaToDto(itemRepository.save(itemToUpdate));
     }
 
@@ -105,11 +113,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDtoShort addComment(Long userId, Long itemId, CommentDto commentDto) {
-        ru.practicum.shareit.user.model.User user = getUser(userId);
+        User user = getUser(userId);
         Item item = getItem(itemId);
 
         if (Objects.isNull(bookingRepository
-                .findFirstByItemIdAndBookerIdAndEndIsBefore(itemId, userId, now())))
+                .findFirstByItemIdAndBookerIdAndEndBefore(itemId, userId, now())))
             throw new ValidationException("Пользователь не являлся арендатором предмета");
 
         if (Objects.isNull(commentDto.getText()) || commentDto.getText().isBlank())
@@ -193,7 +201,7 @@ public class ItemServiceImpl implements ItemService {
         return result;
     }
 
-    private ru.practicum.shareit.user.model.User getUser(Long id) {
+    private User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с id = '%d' не найден".formatted(id)));
     }

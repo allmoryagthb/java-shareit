@@ -34,7 +34,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addComment(Long ownerId, @Positive Long itemId, CommentDto commentDto) {
-        return patch("/%s/comment".formatted(itemId), ownerId, commentDto);
+        return post("/%s/comment".formatted(itemId), ownerId, commentDto);
     }
 
     public ResponseEntity<Object> getItemById(Long itemId, Long ownerId) {

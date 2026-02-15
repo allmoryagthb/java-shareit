@@ -46,4 +46,12 @@ public class BookingController {
         log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingClient.getBooking(userId, bookingId);
     }
+
+    @PatchMapping("/{bookingId}")
+    public ResponseEntity<Object> updateBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                                @PathVariable(name = "bookingId") Long bookingId,
+                                                @RequestParam(name = "approved") Boolean approved) {
+        log.info("Обновить заявку");
+        return bookingClient.updateBookingStatus(bookingId, ownerId, approved);
+    }
 }

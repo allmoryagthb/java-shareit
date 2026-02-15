@@ -7,16 +7,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.comments.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-@Slf4j
-@RestController
+import java.util.Collections;
+
+@Controller
+@RequestMapping(path = "/items")
 @RequiredArgsConstructor
-@RequestMapping("/items")
+@Slf4j
 @Validated
 public class ItemController {
     private final ItemClient itemClient;
@@ -39,7 +42,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                             @Positive @PathVariable(value = "itemId") Long itemId,
+                                             @PathVariable(value = "itemId") Long itemId,
                                              @RequestBody CommentDto commentDto) {
         log.info("Добавить комментарий");
         return itemClient.addComment(ownerId, itemId, commentDto);
@@ -49,6 +52,8 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getItemsByName(@NotBlank @RequestParam(name = "text") String searchText) {
         log.info("Получить предметы, содержащие строку '{}'", searchText);
+        if (searchText.isBlank())
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         return itemClient.getAvailableItemsDtoByText(searchText);
     }
 
@@ -63,7 +68,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                             @Positive @PathVariable(value = "itemId") Long itemId,
+                                             @PathVariable(value = "itemId") Long itemId,
                                              @RequestBody ItemDto itemDto) {
         log.info("Обновить предмет с id = {}", itemId);
         return itemClient.updateItem(ownerId, itemId, itemDto);
@@ -72,7 +77,7 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> deleteItemById(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                               @Positive @PathVariable(value = "itemId") Long itemId) {
+                                                 @PathVariable(value = "itemId") Long itemId) {
         log.info("Удалить предмет с id = {}", itemId);
         return itemClient.deleteItemById(ownerId, itemId);
     }

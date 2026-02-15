@@ -1,7 +1,5 @@
 package ru.practicum.shareit.user.client;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -30,19 +28,19 @@ public class UserClient extends BaseClient {
         return get("");
     }
 
-    public ResponseEntity<Object> getUserDtoById(@Positive Long userId) {
+    public ResponseEntity<Object> getUserDtoById(Long userId) {
         return get("/" + userId);
     }
 
-    public ResponseEntity<Object> addNewUser(@Valid UserDto userDto) {
+    public ResponseEntity<Object> addNewUser(UserDto userDto) {
         return post("", userDto);
     }
 
-    public ResponseEntity<Object> updateUser(@Positive Long userId, UserDto userDto) {
+    public ResponseEntity<Object> updateUser(Long userId, UserDto userDto) {
         return patch("/" + userId, userDto);
     }
 
-    public void deleteUserById(@Positive Long userId) {
+    public void deleteUserById(Long userId) {
         delete("/" + userId);
     }
 }

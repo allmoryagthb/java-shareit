@@ -31,11 +31,11 @@ public class ItemRequestController {
         return itemRequestClient.getAllUsersItemRequests();
     }
 
-    @GetMapping("/requests/{requestId}")
+    @GetMapping("/{requestId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getUsersItemRequestsById(@Positive @PathVariable(value = "requestId") Long requestId) {
+    public ResponseEntity<Object> getUsersItemRequestById(@Positive @PathVariable(value = "requestId") Long requestId) {
         log.info("Получить заявку с id = '{}'", requestId);
-        return itemRequestClient.getUsersItemRequestsById(requestId);
+        return itemRequestClient.getUsersItemRequestById(requestId);
     }
 
     @PostMapping

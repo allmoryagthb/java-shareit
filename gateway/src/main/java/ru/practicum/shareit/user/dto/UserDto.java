@@ -5,15 +5,16 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.util.Create;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank
+    @NotBlank(groups = {Create.class})
     private String name;
-    @NotBlank
-    @Email
+    @Email(groups = Create.class)
+    @NotBlank(groups = Create.class)
     private String email;
 }
