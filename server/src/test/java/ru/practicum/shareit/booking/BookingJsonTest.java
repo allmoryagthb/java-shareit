@@ -28,7 +28,7 @@ public class BookingJsonTest {
 
     @Test
     @SneakyThrows
-    void BookingDtoTest() {
+    void dtoTest() {
         BookingDto bookingDto = new BookingDto(
                 123L,
                 LocalDateTime.now(),
@@ -49,7 +49,7 @@ public class BookingJsonTest {
 
     @Test
     @SneakyThrows
-    void BookingDtoInputTest() {
+    void dtoInputTest() {
         BookingDtoInput bookingDtoInput = new BookingDtoInput(
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(1),
@@ -64,7 +64,7 @@ public class BookingJsonTest {
 
     @Test
     @SneakyThrows
-    void BookingDtoOutputTest() {
+    void dtoOutputTest() {
         BookingDtoOutput bookingDtoOutput = new BookingDtoOutput(
                 123L,
                 LocalDateTime.now(),
