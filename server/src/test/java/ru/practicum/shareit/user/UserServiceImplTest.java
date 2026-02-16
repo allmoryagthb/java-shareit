@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -29,6 +30,7 @@ public class UserServiceImplTest {
     private final UserService userService;
 
     @Test
+    @Rollback
     void saveUserTest() {
         UserDto userDto = new UserDto(
                 "name", "email@mail.ru"
@@ -47,6 +49,7 @@ public class UserServiceImplTest {
     }
 
     @Test
+    @Rollback
     void getAllUsersTest() {
         UserDto userDto1 = new UserDto(
                 "name1", "email1@mail.ru"
@@ -65,6 +68,7 @@ public class UserServiceImplTest {
     }
 
     @Test
+    @Rollback
     void getUserDtoByIdTest() {
         UserDto userDto = new UserDto(
                 "name1", "email1@mail.ru"
@@ -79,6 +83,7 @@ public class UserServiceImplTest {
     }
 
     @Test
+    @Rollback
     void updateUserTest() {
         UserDto userDto = new UserDto(
                 "name1", "email1@mail.ru"
