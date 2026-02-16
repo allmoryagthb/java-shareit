@@ -38,12 +38,11 @@ public class ItemRequestJsonTest {
     @Test
     @SneakyThrows
     void dtoOutputTest() {
-        LocalDateTime startTime = LocalDateTime.now();
         ItemRequestDtoOutput itemRequestDtoOutput = new ItemRequestDtoOutput(
                 1L,
                 "description_test",
                 2L,
-                startTime
+                LocalDateTime.now()
         );
 
         JsonContent<ItemRequestDtoOutput> result = jsonDtoOutput.write(itemRequestDtoOutput);
@@ -51,9 +50,8 @@ public class ItemRequestJsonTest {
                 .isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.description")
                 .isEqualTo("description_test");
-        assertThat(result).extractingJsonPathNumberValue("$.requesterId")
+        assertThat(result).extractingJsonPathNumberValue("$.requester")
                 .isEqualTo(2);
-        assertThat(result).extractingJsonPathStringValue("$.start")
-                .isEqualTo(startTime.toString());
+        assertThat(result).doesNotHaveEmptyJsonPathValue("$.created");
     }
 }
