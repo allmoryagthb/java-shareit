@@ -31,7 +31,6 @@ public class ItemMapper {
     }
 
     public static ItemDtoFull jpaToDtoFull(Item item) {
-
         ItemDtoFull itemDtoFull = new ItemDtoFull(
                 item.getId(),
                 item.getName(),
@@ -43,5 +42,14 @@ public class ItemMapper {
             itemDtoFull.setItemRequestDtoOutput(ItemRequestMapper.jpaToDtoOutput(item.getRequest()));
 
         return itemDtoFull;
+    }
+
+    public static ItemDtoFull dtoToDtoFull(ItemDto itemDto) {
+        return new ItemDtoFull(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable()
+        );
     }
 }

@@ -27,6 +27,13 @@ public class ItemDtoFull {
     private BookingDto nextBooking;
     private List<CommentDto> comments;
 
+    public ItemDtoFull(Long id, String name, String description, Boolean available) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+    }
+
     public ItemDtoFull(Long id, String name, String description, Boolean available, ItemRequestDtoOutput itemRequestDtoOutput) {
         this.id = id;
         this.name = name;

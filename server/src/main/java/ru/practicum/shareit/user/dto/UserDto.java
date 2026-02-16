@@ -17,4 +17,9 @@ public class UserDto {
     @Email(groups = Create.class)
     @NotBlank(groups = Create.class)
     private String email;
+
+    public UserDto(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
