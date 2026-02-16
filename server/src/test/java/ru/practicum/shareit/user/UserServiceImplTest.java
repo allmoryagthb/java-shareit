@@ -42,7 +42,6 @@ public class UserServiceImplTest {
                 .getSingleResult();
 
         assertThat(result.getId(), notNullValue());
-        assertThat(result.getId(), equalTo(1L));
         assertThat(result.getName(), equalTo(userDto.getName()));
         assertThat(result.getEmail(), equalTo(userDto.getEmail()));
     }
@@ -70,12 +69,30 @@ public class UserServiceImplTest {
         UserDto userDto = new UserDto(
                 "name1", "email1@mail.ru"
         );
-        userService.addNewUser(userDto);
-        UserDto result = userService.getUserDtoById(1L);
+        userDto.setId(userService.addNewUser(userDto).getId());
+        UserDto result = userService.getUserDtoById(userDto.getId());
 
         assertThat(result.getId(), notNullValue());
-        assertThat(result.getId(), equalTo(1L));
+        assertThat(result.getId(), equalTo(userDto.getId()));
         assertThat(result.getName(), equalTo(userDto.getName()));
         assertThat(result.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void updateUserTest() {
+        UserDto userDto = new UserDto(
+                "name1", "email1@mail.ru"
+        );
+        UserDto userDtoUpd = new UserDto(
+                "name1Upd", "email1Upd@mail.ru"
+        );
+        userDto.setId(userService.addNewUser(userDto).getId());
+        userService.updateUser(userDto.getId(), userDtoUpd);
+
+        UserDto result = userService.getUserDtoById(userDto.getId());
+        assertThat(result.getId(), notNullValue());
+        assertThat(result.getId(), equalTo(userDto.getId()));
+        assertThat(result.getName(), equalTo(userDtoUpd.getName()));
+        assertThat(result.getEmail(), equalTo(userDtoUpd.getEmail()));
     }
 }
