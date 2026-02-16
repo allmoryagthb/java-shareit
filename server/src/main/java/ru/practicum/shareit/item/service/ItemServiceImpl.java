@@ -21,6 +21,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.*;
 import java.util.function.Function;
@@ -38,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private final ru.practicum.shareit.user.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
 
     @Override
