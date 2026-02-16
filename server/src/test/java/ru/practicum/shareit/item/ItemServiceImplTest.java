@@ -9,16 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.comments.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
@@ -33,13 +28,8 @@ import static org.hamcrest.Matchers.equalTo;
         webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class ItemServiceImplTest {
     private final ItemService itemService;
-    private final BookingRepository bookingRepository;
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final ItemRequestRepository itemRequestRepository;
     private final UserService userService;
     private final EntityManager entityManager;
-    private final ItemRequestService itemRequestService;
 
     @Test
     @Rollback
