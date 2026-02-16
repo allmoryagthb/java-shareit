@@ -71,7 +71,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllItems() {
+    void getAllItemsTest() {
         ItemDtoFull itemDtoFull = ItemMapper.dtoToDtoFull(itemDtoOutput);
         when(itemService.getUserItems(anyLong())).thenReturn(List.of(itemDtoFull));
 
@@ -86,7 +86,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void updateItem() {
+    void updateItemTest() {
         when(itemService.updateItem(anyLong(), anyLong(), any())).thenReturn(itemDtoOutput);
 
         mvc.perform(patch("/items/1")

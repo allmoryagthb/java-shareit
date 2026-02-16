@@ -12,4 +12,8 @@ public class ItemRequestDtoInput {
     private Long id;
     @NotBlank
     private String description;
+
+    public ItemRequestDtoInput(String description) {
+        this.description = description;
+    }
 }
