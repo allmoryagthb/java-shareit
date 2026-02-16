@@ -14,6 +14,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
 import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -98,9 +99,9 @@ public class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(bookingDtoOutput)))
-                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$.item", is(bookingDto.getItem()), Item.class))
-                .andExpect(jsonPath("$.booker", is(bookingDto.getBooker()), User.class));
+                .andExpect(jsonPath("$.id", is(bookingDtoOutput.getId()), Long.class))
+                .andExpect(jsonPath("$.item", is(bookingDtoOutput.getItem()), ItemDto.class))
+                .andExpect(jsonPath("$.booker", is(bookingDtoOutput.getBooker()), UserDto.class));
     }
 
     @Test
