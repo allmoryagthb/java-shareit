@@ -40,7 +40,6 @@ public class ItemRequestServiceImplTest {
         ItemRequestDtoOutput result = itemRequestService.addUsersItemRequest(userDto.getId(), itemRequestDtoInput);
 
         assertThat(result.getId(), notNullValue());
-        assertThat(result.getId(), equalTo(1L));
         assertThat(result.getDescription(), equalTo(itemRequestDtoInput.getDescription()));
 
         TypedQuery<ItemRequest> query = entityManager

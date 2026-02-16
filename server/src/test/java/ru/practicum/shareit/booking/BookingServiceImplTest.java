@@ -3,10 +3,10 @@ package ru.practicum.shareit.booking;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -38,7 +38,7 @@ public class BookingServiceImplTest {
     private final ItemService itemService;
 
     @Test
-    @SneakyThrows
+    @Rollback
     void addBookingTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
@@ -59,7 +59,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
+    @Rollback
     void updateBookingStatusByBookerTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
@@ -84,7 +84,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
+    @Rollback
     void rejectBookingStatusByItemOwnerTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
@@ -109,7 +109,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
+    @Rollback
     void approveBookingStatusByItemOwnerTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
@@ -134,7 +134,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
+    @Rollback
     void getAllBookingsByBookerTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
@@ -156,7 +156,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
+    @Rollback
     void getAllBookingsByOwnerTest() {
         UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
         UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
