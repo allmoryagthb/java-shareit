@@ -9,13 +9,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -101,5 +106,27 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is(itemDtoOutput.getName()), String.class))
                 .andExpect(jsonPath("$.description", is(itemDtoOutput.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDtoOutput.getAvailable()), Boolean.class));
+    }
+
+    @Test
+    @SneakyThrows
+    void addCommentTest() {
+        CommentDtoShort commentDtoShort = new CommentDtoShort(1L, "text", "author name",
+                LocalDateTime.now().plusMinutes(10));
+        CommentDto commentDto = new CommentDto(1L, "text", new Item(), new User(), LocalDateTime.now().plusMinutes(1));
+        when(itemService.addComment(anyLong(), anyLong(), any()))
+                .thenReturn(commentDtoShort);
+
+        mvc.perform(post("/items/1/comment")
+                        .content(mapper.writeValueAsString(commentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(mapper.writeValueAsString(commentDtoShort)))
+                .andExpect(jsonPath("$.id", is(commentDtoShort.getId()), Long.class))
+                .andExpect(jsonPath("$.text", is(commentDtoShort.getText()), String.class))
+                .andExpect(jsonPath("$.authorName", is(commentDtoShort.getAuthorName()), String.class));
     }
 }
