@@ -17,4 +17,9 @@ public class CommentDto {
     private Item item;
     private User author;
     private LocalDateTime created;
+
+    public CommentDto(String text, LocalDateTime created) {
+        this.text = text;
+        this.created = created;
+    }
 }

@@ -3,12 +3,19 @@ package ru.practicum.shareit.item;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoInput;
+import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.comments.dto.CommentDto;
+import ru.practicum.shareit.item.comments.dto.CommentDtoShort;
+import ru.practicum.shareit.item.comments.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Item;
@@ -16,6 +23,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +38,7 @@ public class ItemServiceImplTest {
     private final ItemService itemService;
     private final UserService userService;
     private final EntityManager entityManager;
+    private final BookingService bookingService;
 
     @Test
     @Rollback
@@ -117,5 +126,30 @@ public class ItemServiceImplTest {
         assertThat(itemDtoUpd.getId(), equalTo(itemResult.getId()));
         assertThat(itemDtoUpd.getName(), equalTo(itemResult.getName()));
         assertThat(itemDtoUpd.getDescription(), equalTo(itemResult.getDescription()));
+    }
+
+    @Test
+    @Rollback
+    @SneakyThrows
+    void addCommentTest() {
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("testUser", "emailfgbdfg@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("testUser", "emailsdfgsdq@mail.ru"));
+        ItemDto itemDto = itemService
+                .addItem(userDtoOwner.getId(), new ItemDto("item1", "itemDescription1", true));
+        BookingDto bookingDto = bookingService.addBooking(
+                new BookingDtoInput(LocalDateTime.now().plusSeconds(1), LocalDateTime.now().plusSeconds(2), itemDto.getId()),
+                userDtoBooker.getId());
+        bookingService.updateBookingStatus(bookingDto.getId(), userDtoOwner.getId(), true);
+        Thread.sleep(3_000);
+        CommentDto commentDto = new CommentDto("text", LocalDateTime.now().plusMinutes(1));
+        CommentDtoShort commentDtoShort = itemService.addComment(userDtoBooker.getId(), itemDto.getId(), commentDto);
+
+        TypedQuery<Comment> query = entityManager
+                .createQuery("Select i from Comment i where i.id = :id", Comment.class);
+        Comment commentResult = query.setParameter("id", commentDtoShort.getId())
+                .getSingleResult();
+
+        assertThat(commentDtoShort.getId(), equalTo(commentResult.getId()));
+        assertThat(commentDtoShort.getText(), equalTo(commentResult.getText()));
     }
 }
