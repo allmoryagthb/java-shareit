@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -38,7 +39,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
-    private ru.practicum.shareit.user.model.User booker;
+    private User booker;
 
     @NotNull
     @Enumerated(EnumType.STRING)
