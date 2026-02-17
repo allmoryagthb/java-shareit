@@ -40,11 +40,11 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void addBookingTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
-        itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail521@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail21424@mail.ru"));
+        ItemDto itemDto = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName1", "itemDesc1", true));
         BookingDto bookingDtoResult = bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto.getId()),
                 userDtoBooker.getId());
 
         TypedQuery<Booking> query = entityManager
@@ -61,11 +61,11 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void updateBookingStatusByBookerTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
-        itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail521@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail32142@mail.ru"));
+        ItemDto itemDto = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName2", "itemDesc2", true));
         BookingDto bookingDto = bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto.getId()),
                 userDtoBooker.getId());
 
         BookingDtoOutput bookingDtoOutput = bookingService
@@ -86,11 +86,11 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void rejectBookingStatusByItemOwnerTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
-        itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1123@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail3212@mail.ru"));
+        ItemDto itemDto = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName3", "itemDesc3", true));
         BookingDto bookingDto = bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto.getId()),
                 userDtoBooker.getId());
 
         BookingDtoOutput bookingDtoOutput = bookingService
@@ -111,11 +111,11 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void approveBookingStatusByItemOwnerTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
-        itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1232@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2123@mail.ru"));
+        ItemDto itemDto = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName4", "itemDesc4", true));
         BookingDto bookingDto = bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto.getId()),
                 userDtoBooker.getId());
 
         BookingDtoOutput bookingDtoOutput = bookingService
@@ -136,18 +136,20 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void getAllBookingsByBookerTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
-        itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail135@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2512@mail.ru"));
+        ItemDto itemDto1 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        ItemDto itemDto2 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        ItemDto itemDto3 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
 
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto1.getId()),
                 userDtoBooker.getId());
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto2.getId()),
                 userDtoBooker.getId());
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto3.getId()),
                 userDtoBooker.getId());
 
         List<BookingDto> resultList = bookingService.getAllBookingsByBooker("ALL", userDtoBooker.getId());
@@ -158,18 +160,22 @@ public class BookingServiceImplTest {
     @Test
     @Rollback
     void getAllBookingsByOwnerTest() {
-        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail1@mail.ru"));
-        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail2@mail.ru"));
+        UserDto userDtoOwner = userService.addNewUser(new UserDto("userName", "mail16234@mail.ru"));
+        UserDto userDtoBooker = userService.addNewUser(new UserDto("userNameBooker", "mail1242@mail.ru"));
         itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
 
+        ItemDto itemDto1 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        ItemDto itemDto2 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+        ItemDto itemDto3 = itemService.addItem(userDtoOwner.getId(), new ItemDto("itemName", "itemDesc", true));
+
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto1.getId()),
                 userDtoBooker.getId());
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto2.getId()),
                 userDtoBooker.getId());
         bookingService.addBooking(
-                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), userDtoOwner.getId()),
+                new BookingDtoInput(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(10), itemDto3.getId()),
                 userDtoBooker.getId());
 
         List<BookingDto> resultList = bookingService.getAllBookingsByOwner("ALL", userDtoOwner.getId());
